@@ -7,6 +7,7 @@ import { motion, AnimatePresence, LayoutGroup } from 'framer-motion'
 interface StickyNoteAreaProps {
   notes: Note[];
   onDeleteNote: (id: string) => void;
+  isEditMode: boolean;
 }
 
 export default function StickyNoteArea({ notes, onDeleteNote, isEditMode }: StickyNoteAreaProps) {
