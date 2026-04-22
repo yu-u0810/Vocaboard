@@ -9,7 +9,7 @@ interface StickyNoteAreaProps {
   onDeleteNote: (id: string) => void;
 }
 
-export default function StickyNoteArea({ notes, onDeleteNote }: StickyNoteAreaProps) {
+export default function StickyNoteArea({ notes, onDeleteNote, isEditMode }: StickyNoteAreaProps) {
   // 拡大表示しているメモのState（nullなら何も拡大していない状態）
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
@@ -36,7 +36,9 @@ export default function StickyNoteArea({ notes, onDeleteNote }: StickyNoteAreaPr
             <motion.div 
               key={note.id} 
               layoutId={`card-${note.id}`}
-              onClick={() => setSelectedNote(note)}
+              onClick={() => {
+                if (!isEditMode) setSelectedNote(note)
+                }}
               whileHover={{ scale: 1.05, y: -8}}
               whileTap={{ scale: 0.97 }}
               style={{ borderLeftColor: '#0f518a' }}
@@ -54,10 +56,14 @@ export default function StickyNoteArea({ notes, onDeleteNote }: StickyNoteAreaPr
                     e.stopPropagation(); // プロの必須処理：親のonClick(拡大)を発火させない
                     onDeleteNote(note.id);
                   }}
-                  className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-50 rounded-xl opacity-0 group-hover:opacity-100 transition-all"
+                  className={`p-1.5 text-red-400 bg-red-50 rounded-xl transition-all shadow-sm z-20
+                    ${isEditMode
+                      ? 'opacity-100 scale-100'
+                      : 'opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100'
+                    }`}
                   title="削除"
                 >
-                  <Trash2 size={16} />
+                  <Trash2 size={18} />
                 </button>
               </div>
               
@@ -66,7 +72,7 @@ export default function StickyNoteArea({ notes, onDeleteNote }: StickyNoteAreaPr
                   layoutId={`image-${note.id}`}
                   src={note.imageUrl} 
                   alt="Handwritten note" 
-                  className="w-full h-full object-coutain"
+                  className="w-full h-full object-contain"
                 />
               </div>
             </motion.div>

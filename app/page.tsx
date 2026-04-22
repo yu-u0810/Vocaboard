@@ -18,7 +18,7 @@ export default function HomePage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [notes, setNotes] = useState<Note[]>([]);
-  
+  const [isEditMode, setIsEditMode] = useState(false)
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [latestAudioBlob, setLatestAudioBlob] = useState<Blob | null>(null);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
@@ -43,6 +43,8 @@ export default function HomePage() {
       alert(`準備ができていません。\n録音データ: ${!!latestAudioBlob ? "OK" : "なし"}\nメモ数: ${notes.length}`);
       return;
     }
+
+    setIsEditMode(false);
 
     setIsAnalyzing(true);
     console.log("解析プロセス開始...");
@@ -110,9 +112,25 @@ export default function HomePage() {
       <main className="flex flex-1 h-full p-4 pt-16 gap-6 overflow-hidden">
         <section className={`flex-1 h-full flex flex-col min-h-0 overflow-hidden transition-all duration-500 rounded-[40px] border shadow-inner
           ${isRecording ? 'border-red-300 bg-red-50/20' : 'border-gray-200 bg-white/40'}`}>
+
+          <div className="flex justify-between items-center px-8 pt-6 pb-2 shrink-0">
+            <h2 className="text-lg font-bold text-gray-500 flex items-center gap-2">
+              メモ一覧 <span className="text-sm font-medium opacity-60">({notes.length})</span>
+            </h2>
+
+            <button
+              onClick={() => setIsEditMode(!isEditMode)}
+              className={`px-6 py-2 rounded-full text-sm font-bold transition-all active:scale-95 shadow-sm ${
+                isEditMode
+                  ? 'bg-red-500 text-white shadow-red-200'
+                  : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'                }`}
+              >
+             {isEditMode ? '編集を終了' : '編集'}
+            </button>
+          </div>
           
           <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
-            <StickyNoteArea notes={notes} onDeleteNote={handleDeleteNote} />
+            <StickyNoteArea notes={notes} onDeleteNote={handleDeleteNote} isEditMode={isEditMode} />
           </div>
           
           <div className="p-4 bg-white/60 backdrop-blur-sm border-t border-gray-100">

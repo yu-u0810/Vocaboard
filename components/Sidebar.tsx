@@ -1,11 +1,18 @@
 "use client";
 import React from "react";
-import { Menu, X, Home, BarChart2 } from 'lucide-react';
+import { Menu, X, Home, BarChart2, Image as ImageIcon, Heart } from 'lucide-react';
+import FamilyAlbum from "./FamilyAlbum";
 
 interface SidebarProps {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
 }
+
+const FAMILY_PHOTOS = [
+  { id: 1, url: "https://images.unsplash.com/photo-1590073844006-3a7436756b54?auto=format&fit=crop&q=80&w=200", title: "旅行" },
+  { id: 2, url: "https://images.unsplash.com/photo-1542037104857-6bb5bc91ebba?auto=format&fit=crop&q=80&w=200", title: "食事" },
+  { id: 3, url: "https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=200", title: "散歩" },
+];
 
 export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
   return (
@@ -50,6 +57,12 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
               <span>解析画面（グラフ）</span>
             </div>
           </nav>
+
+          <hr className="mb-8 border-gray-100" />
+
+          <div className="flex-1 min-h-0">
+            <FamilyAlbum />
+          </div>
 
           {/* 下部にステータスなどを表示するスペースを確保 */}
           <div className="mt-auto p-4 bg-gray-50 rounded-2xl border border-gray-100">
