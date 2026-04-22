@@ -1,23 +1,26 @@
 "use client";
 import React from "react";
-import { Menu, X, Home, BarChart2, Image as ImageIcon, Heart } from 'lucide-react';
-import FamilyAlbum from "./FamilyAlbum";
+// ImageIcon アイコンを追加
+import { Menu, X, Home, BarChart2, Image as ImageIcon } from 'lucide-react';
 
 interface SidebarProps {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
+  // 画面切り替え用の型定義を追加
+  view: 'home' | 'album' | 'analytics';
+  setView: (view: 'home' | 'album' | 'analytics') => void;
 }
 
-const FAMILY_PHOTOS = [
-  { id: 1, url: "https://images.unsplash.com/photo-1590073844006-3a7436756b54?auto=format&fit=crop&q=80&w=200", title: "旅行" },
-  { id: 2, url: "https://images.unsplash.com/photo-1542037104857-6bb5bc91ebba?auto=format&fit=crop&q=80&w=200", title: "食事" },
-  { id: 3, url: "https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=200", title: "散歩" },
-];
+export default function Sidebar({ isOpen, setIsOpen, view, setView }: SidebarProps) {
+  // ボタンクリック時の共通処理
+  const handleNavClick = (targetView: 'home' | 'album' | 'analytics') => {
+    setView(targetView); // 画面を切り替える
+    setIsOpen(false);    // サイドバーを閉じる
+  };
 
-export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
   return (
     <>
-      {/* ハンバーガーボタン: サイドバーの外に出しておく */}
+      {/* ハンバーガーボタン */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="fixed top-4 left-4 z-50 p-3 bg-white rounded-xl shadow-md border border-gray-200 active:scale-90 transition-transform"
@@ -26,7 +29,7 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
         {isOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
-      {/* バックドロップ（背景の暗り）: isOpenの時だけ不透明度を上げる */}
+      {/* バックドロップ */}
       <div 
         className={`fixed inset-0 z-40 bg-black/30 backdrop-blur-sm transition-opacity duration-300 ${
           isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
@@ -34,7 +37,7 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
         onClick={() => setIsOpen(false)}
       />
 
-      {/* サイドバー本体: transform を使って画面外(左)に隠す */}
+      {/* サイドバー本体 */}
       <aside
         className={`fixed top-0 left-0 z-40 w-72 h-full bg-white shadow-2xl transition-transform duration-300 ease-in-out transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
@@ -42,33 +45,52 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
       >
         <div className="flex flex-col h-full p-6 pt-24">
           <div className="mb-8 px-2">
-            <h2 className="text-xl font-black text-blue-600 tracking-tighter">VocaBoard</h2>
-            <p className="text-xs text-gray-400 font-medium">Cognitive Analysis System</p>
+            <h2 className="text-xl font-black text-blue-600 tracking-tighter italic">VocaBoard</h2>
+            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Cognitive Analysis</p>
           </div>
 
-          <nav className="space-y-2 flex-1">
-            <div className="flex items-center gap-3 p-4 bg-blue-50 text-blue-600 rounded-2xl font-bold cursor-pointer">
+          <nav className="space-y-2 flex-none">
+            {/* メモ帳（ホーム）ボタン */}
+            <div 
+              onClick={() => handleNavClick('home')}
+              className={`flex items-center gap-3 p-4 rounded-2xl font-bold cursor-pointer transition-all ${
+                view === 'home' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'text-gray-500 hover:bg-gray-50'
+              }`}
+            >
               <Home size={22} /> 
-              <span>ホーム</span>
+              <span>メモ帳</span>
+            </div>
+
+            {/* アルバムボタン */}
+            <div 
+              onClick={() => handleNavClick('album')}
+              className={`flex items-center gap-3 p-4 rounded-2xl font-bold cursor-pointer transition-all ${
+                view === 'album' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-gray-500 hover:bg-gray-50'
+              }`}
+            >
+              <ImageIcon size={22} /> 
+              <span>アルバム</span>
             </div>
             
-            <div className="flex items-center gap-3 p-4 text-gray-500 hover:bg-gray-50 rounded-2xl transition-colors cursor-pointer">
+            {/* 解析画面ボタン */}
+            <div 
+              onClick={() => handleNavClick('analytics')}
+              className={`flex items-center gap-3 p-4 rounded-2xl font-bold cursor-pointer transition-all ${
+                view === 'analytics' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-200' : 'text-gray-500 hover:bg-gray-50'
+              }`}
+            >
               <BarChart2 size={22} /> 
-              <span>解析画面（グラフ）</span>
+              <span>解析画面</span>
             </div>
           </nav>
 
-          <hr className="mb-8 border-gray-100" />
+          <hr className="my-8 border-gray-100" />
 
-          <div className="flex-1 min-h-0">
-            <FamilyAlbum />
-          </div>
-
-          {/* 下部にステータスなどを表示するスペースを確保 */}
+          {/* 下部はステータス表示のみにする（写真は FamilyAlbumView 側で表示するため） */}
           <div className="mt-auto p-4 bg-gray-50 rounded-2xl border border-gray-100">
-            <div className="flex items-center gap-2 text-xs text-gray-500">
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              VocaSense Engine Online
+            <div className="flex items-center gap-2 text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+              <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+              Engine Online
             </div>
           </div>
         </div>
